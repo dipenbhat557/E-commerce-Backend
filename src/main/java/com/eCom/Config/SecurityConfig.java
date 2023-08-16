@@ -1,10 +1,12 @@
 package com.eCom.Config;
 
 import org.springframework.web.filter.CorsFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -25,6 +27,17 @@ import jakarta.servlet.Filter;
 
 @Configuration
 public class SecurityConfig {
+
+    public static final String[] PUBLIC_URLS = {
+            "/user/create",
+            "/auth/**",
+            "/login/oauth2/code/**",
+            "/v3/api-docs",
+            "/v2/api-docs",
+            "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/webjars/**"
+    };
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -50,8 +63,9 @@ public class SecurityConfig {
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/user/create").permitAll()
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        
+                        .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

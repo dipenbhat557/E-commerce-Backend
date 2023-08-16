@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  dbservice:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Mume@143
+    ports:
+      - 3308:3306
+    networks:
+      - reviewapp
+
+  appservice:
+    build: .
+    depends_on:
+      - dbservice
+    environment:
+      - spring.datasource.url=jdbc:mysql://dbservice:3306/ecom?createDatabaseIfNotExist=true
+      - spring.datasource.username=root
+      - spring.datasource.password=Mume@143
+    ports:
+      - 8080:8080
+    networks:
+      - reviewapp
+
+networks:
+  reviewapp:
